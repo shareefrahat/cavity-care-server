@@ -53,7 +53,7 @@ async function run() {
     });
 
     app.get("/available", async (req, res) => {
-      const date = req.query?.date || "May 14, 2022";
+      const date = req.query?.date;
 
       // step-1 : get all services
 
@@ -67,15 +67,25 @@ async function run() {
       // step-3 : for each service find booking for that service
 
       services.forEach((service) => {
+        // step-4 : find booking for that service
         const serviceBooking = bookings.filter(
           (booking) => booking.treatment === service.name
         );
-        const booked = serviceBooking.map((s) => s.slot);
-        const available = service.slots.filter((s) => !booked.includes(s));
-        service.available = available;
-        // service.booked = serviceBooking.map((s) => s.slot);
+        // step-5 : select slots for the service booking
+        const booked = serviceBooking.map((booked) => booked.slot);
+
+        // step-6 : select those slots that are not available in booked slots
+        const available = service.slots.filter(
+          (slot) => !booked.includes(slot)
+        );
+        // step-7 : set available slots to make it easier
+        service.slots = available;
       });
-      //Nota bene: Available api je object gula dibe tader moddhe booked and slot nam e 2ta array thakbe. Then amra slot array theke booked array ta minus kore available gulake dekhabo client side e.
+
+      //------Nota bene: Available api je object gula dibe tader moddhe booked and slot nam e 2ta array thakbe. Then amra slot array theke booked array ta minus kore available gulake dekhabo client side e. But this is not the proper way of query--------//
+
+      //We should use aggregate lookup, pipeline, match, group, etc when we will learn more about mongodb and express.
+
       res.send(services);
     });
   } finally {
