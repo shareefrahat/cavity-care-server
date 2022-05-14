@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion } = require("mongodb");
+const query = require("express/lib/middleware/query");
 const port = process.env.PORT || 5000;
 
 const app = express();
@@ -25,12 +26,21 @@ async function run() {
   try {
     await client.connect();
     console.log("Database: MongDB is connected");
+
     const serviceCollection = client.db("CavityCare").collection("services");
+    const bookingCollection = client.db("CavityCare").collection("bookings");
+
     app.get("/services", async (req, res) => {
       const query = {};
       const cursor = serviceCollection.find(query);
       const services = await cursor.toArray();
       res.send(services);
+    });
+
+    app.post("bookings", async (req, res) => {
+      const booking = req.body;
+      const result = await bookingCollection.insertOne(booking);
+      res.send(result);
     });
   } finally {
   }
