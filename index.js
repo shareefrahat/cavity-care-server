@@ -3,7 +3,6 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion } = require("mongodb");
-const query = require("express/lib/middleware/query");
 const port = process.env.PORT || 5000;
 
 const app = express();
@@ -26,13 +25,13 @@ const client = new MongoClient(uri, {
 function verifyJWT(req, res, next) {
   const authHeader = req?.headers?.authorization;
   if (!authHeader) {
+    console.log("ekhane ache");
     return res.status(401).send({ message: "Unauthorized access" });
   }
-
   const token = authHeader.split(" ")[1];
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (error, decoded) {
-    if (error) {
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+    if (err) {
       return res.status(403).send({ message: "Forbidden access" });
     }
     req.decoded = decoded;
@@ -57,7 +56,7 @@ async function run() {
     });
 
     app.put("/user/:email", async (req, res) => {
-      const email = req.params.email;
+      const email = req.params?.email;
       const user = req.body;
       const filter = { email: email };
       const options = { upsert: true };
@@ -76,11 +75,14 @@ async function run() {
 
     app.get("/bookings", verifyJWT, async (req, res) => {
       const patient = req.query?.patient;
-      const decodedEmail = req.decoded.email;
+      const decodedEmail = req.decoded?.email;
+
       if (patient === decodedEmail) {
         const query = { patient: patient };
         const bookings = await bookingCollection.find(query).toArray();
-        res.send(bookings);
+        return res.send(bookings);
+      } else {
+        return res.status(403).send({ message: "Forbidden access" });
       }
     });
 
