@@ -78,7 +78,6 @@ async function run() {
       const patient = req.query?.patient;
       const query = { patient: patient };
       const bookings = await bookingCollection.find(query).toArray();
-
       res.send(bookings);
     });
 
