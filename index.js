@@ -47,6 +47,7 @@ async function run() {
     const serviceCollection = client.db("CavityCare").collection("services");
     const bookingCollection = client.db("CavityCare").collection("bookings");
     const userCollection = client.db("CavityCare").collection("users");
+    const doctorCollection = client.db("CavityCare").collection("doctors");
 
     app.get("/services", async (req, res) => {
       const query = {};
@@ -166,6 +167,12 @@ async function run() {
       //We should use aggregate lookup, pipeline, match, group, etc when we will learn more about mongodb and express.
 
       res.send(services);
+    });
+
+    app.post("/doctor", verifyJWT, async (req, res) => {
+      const doctor = req.body;
+      const result = await doctorCollection.insertOne(doctor);
+      res.send(result);
     });
   } finally {
   }
