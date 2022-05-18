@@ -190,7 +190,7 @@ async function run() {
     });
 
     app.delete("/doctors/:email", verifyJWT, verifyAdmin, async (req, res) => {
-      const email = req.params.email;
+      const email = req.params?.email;
       const filter = { email: email };
       const result = await doctorCollection.deleteOne(filter);
       res.send(result);
