@@ -25,7 +25,6 @@ const client = new MongoClient(uri, {
 function verifyJWT(req, res, next) {
   const authHeader = req?.headers?.authorization;
   if (!authHeader) {
-    console.log("ekhane ache");
     return res.status(401).send({ message: "Unauthorized access" });
   }
   const token = authHeader.split(" ")[1];
@@ -108,7 +107,7 @@ async function run() {
       const token = jwt.sign(
         { email: email },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "1d" }
       );
       res.send({ result, token });
     });
