@@ -178,12 +178,12 @@ async function run() {
       res.send(services);
     });
 
-    app.get("/doctor", verifyJWT, verifyAdmin, async (req, res) => {
+    app.get("/doctors", verifyJWT, verifyAdmin, async (req, res) => {
       const doctors = await doctorCollection.find().toArray();
       res.send(doctors);
     });
 
-    app.post("/doctor", verifyJWT, verifyAdmin, async (req, res) => {
+    app.post("/doctors", verifyJWT, verifyAdmin, async (req, res) => {
       const doctor = req.body;
       const result = await doctorCollection.insertOne(doctor);
       res.send(result);
