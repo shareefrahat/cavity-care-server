@@ -47,6 +47,7 @@ async function run() {
     const bookingCollection = client.db("CavityCare").collection("bookings");
     const userCollection = client.db("CavityCare").collection("users");
     const doctorCollection = client.db("CavityCare").collection("doctors");
+    const paymentCollection = client.db("CavityCare").collection("payments");
 
     const verifyAdmin = async (req, res, next) => {
       const requester = req.decoded.email;
@@ -160,6 +161,24 @@ async function run() {
       }
       const result = await bookingCollection.insertOne(booking);
       return res.send({ success: true, result });
+    });
+
+    app.patch("/bookings/:id", verifyJWT, async (req, res) => {
+      const id = req.params?.id;
+      const payment = req.body;
+      const filter = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          paid: true,
+          transactionId: payment.transactionId,
+        },
+      };
+      const result = await paymentCollection.insertOne(payment);
+      const updateBooking = await bookingCollection.updateOne(
+        filter,
+        updateDoc
+      );
+      return res.send(updateDoc);
     });
 
     app.get("/available", async (req, res) => {
